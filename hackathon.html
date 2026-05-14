@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Johnny ASOC — EL Codex Labs | HeyGen Hackathon 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --electric: #00C8FF;
+    --gold: #FFB800;
+    --red: #FF3B3B;
+    --green: #00FF9C;
+    --navy: #020D1A;
+    --mid: #061828;
+    --panel: #091F33;
+    --border: rgba(0,200,255,0.2);
+    --glow: rgba(0,200,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: #C8E0F0;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── HACKATHON BANNER ── */
+  .hackathon-banner {
+    background: linear-gradient(135deg, #FF3B3B 0%, #8B0000 50%, #FF3B3B 100%);
+    background-size: 200% 200%;
+    animation: bannerPulse 3s ease infinite;
+    text-align: center;
+    padding: 10px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hackathon-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.05) 20px,
+      rgba(255,255,255,0.05) 40px
+    );
+  }
+
+  @keyframes bannerPulse {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .hackathon-banner span {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: white;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hackathon-banner .blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .logo-block .company {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--electric);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .logo-block .tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(200,224,240,0.4);
+    letter-spacing: 2px;
+  }
+
+  .status-block {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,255,156,0.08);
+    border: 1px solid rgba(0,255,156,0.3);
+    padding: 6px 14px;
+    border-radius: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 1px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--green);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .date-stamp {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(200,224,240,0.3);
+    letter-spacing: 1px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 60px 0 40px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--electric);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(42px, 7vw, 82px);
+    font-weight: 900;
+    line-height: 0.95;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+
+  .hero-title .name {
+    color: white;
+    display: block;
+  }
+
+  .hero-title .asoc {
+    color: var(--electric);
+    display: block;
+    text-shadow: 0 0 40px rgba(0,200,255,0.4);
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    color: rgba(200,224,240,0.7);
+    max-width: 600px;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.6s forwards;
+  }
+
+  .hero-subtitle strong {
+    color: var(--electric);
+    font-weight: 600;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── THREAT TICKER ── */
+  .threat-ticker {
+    background: rgba(255,59,59,0.06);
+    border: 1px solid rgba(255,59,59,0.3);
+    border-left: 3px solid var(--red);
+    padding: 12px 20px;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.8s forwards;
+    overflow: hidden;
+  }
+
+  .ticker-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--red);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ticker-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,180,180,0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    animation: ticker 20s linear infinite;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ── VIDEO SECTION ── */
+  .video-section {
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1s forwards;
+  }
+
+  .video-frame {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-frame::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--electric), transparent);
+    animation: scanline 3s ease-in-out infinite;
+  }
+
+  @keyframes scanline {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .video-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,200,255,0.03);
+  }
+
+  .video-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rec-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.5s ease infinite;
+    box-shadow: 0 0 10px var(--red);
+  }
+
+  .video-header-left span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(200,224,240,0.6);
+    letter-spacing: 2px;
+  }
+
+  .threat-level {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--red);
+    border: 1px solid rgba(255,59,59,0.4);
+    padding: 4px 10px;
+  }
+
+  .video-placeholder {
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #040F1C 0%, #061828 50%, #040F1C 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 360px;
+  }
+
+  .video-placeholder video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-placeholder-inner {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .play-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--electric);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .play-ring::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 50%;
+    animation: ringPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.2; }
+  }
+
+  .play-ring:hover {
+    background: rgba(0,200,255,0.1);
+    box-shadow: 0 0 30px rgba(0,200,255,0.3);
+  }
+
+  .play-icon {
+    width: 0;
+    height: 0;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    border-left: 22px solid var(--electric);
+    margin-left: 4px;
+  }
+
+  .video-loading-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--electric);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .video-sub-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    color: rgba(200,224,240,0.4);
+    letter-spacing: 1px;
+  }
+
+  .video-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--electric);
+    border-style: solid;
+    opacity: 0.4;
+  }
+
+  .video-corner.tl { top: 16px; left: 16px; border-width: 2px 0 0 2px; }
+  .video-corner.tr { top: 16px; right: 16px; border-width: 2px 2px 0 0; }
+  .video-corner.bl { bottom: 16px; left: 16px; border-width: 0 0 2px 2px; }
+  .video-corner.br { bottom: 16px; right: 16px; border-width: 0 2px 2px 0; }
+
+  /* ── INTEL BREAKDOWN ── */
+  .intel-section {
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.2s forwards;
+  }
+
+  .section-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: var(--electric);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .intel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+
+  .intel-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .intel-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--electric);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .intel-card:hover::before { transform: scaleX(1); }
+  .intel-card:hover { background: rgba(0,200,255,0.04); }
+
+  .intel-card.red::before { background: var(--red); }
+  .intel-card.gold::before { background: var(--gold); }
+  .intel-card.green::before { background: var(--green); }
+
+  .intel-card-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(200,224,240,0.4);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .intel-card-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+
+  .intel-card.red .intel-card-value { color: var(--red); text-shadow: 0 0 20px rgba(255,59,59,0.3); }
+  .intel-card.gold .intel-card-value { color: var(--gold); }
+  .intel-card.green .intel-card-value { color: var(--green); }
+
+  .intel-card-sub {
+    font-size: 13px;
+    color: rgba(200,224,240,0.5);
+    font-weight: 300;
+  }
+
+  /* ── DESCRIPTION ── */
+  .description-block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--electric);
+    padding: 28px 32px;
+    margin-bottom: 16px;
+  }
+
+  .description-block h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--electric);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .description-block p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgba(200,224,240,0.8);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+
+  .description-block p strong {
+    color: white;
+    font-weight: 600;
+  }
+
+  .description-block p em {
+    color: var(--electric);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* ── ACTION ITEMS ── */
+  .actions-block {
+    background: rgba(255,184,0,0.04);
+    border: 1px solid rgba(255,184,0,0.2);
+    border-left: 3px solid var(--gold);
+    padding: 24px 32px;
+    margin-bottom: 48px;
+  }
+
+  .actions-block h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .action-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .action-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 16px;
+    color: rgba(200,224,240,0.8);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .action-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(255,184,0,0.1);
+    border: 1px solid rgba(255,184,0,0.3);
+    padding: 3px 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+
+  /* ── ABOUT JOHNNY ── */
+  .about-section {
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.4s forwards;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .intel-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .about-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 28px;
+  }
+
+  .about-panel h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--electric);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .about-panel p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(200,224,240,0.65);
+    font-weight: 300;
+  }
+
+  .about-panel.dark {
+    background: rgba(0,200,255,0.03);
+  }
+
+  .phrase-block {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .phrase {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .phrase-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    background: rgba(255,184,0,0.08);
+    border: 1px solid rgba(255,184,0,0.2);
+    padding: 3px 8px;
+    flex-shrink: 0;
+  }
+
+  .phrase-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: rgba(200,224,240,0.6);
+  }
+
+  /* ── RADIO SECTION ── */
+  .radio-section {
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.6s forwards;
+  }
+
+  .radio-player {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .radio-player::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(0,200,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .radio-icon-block {
+    flex-shrink: 0;
+  }
+
+  .radio-rings {
+    width: 64px;
+    height: 64px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .radio-rings::before,
+  .radio-rings::after {
+    content: '';
+    position: absolute;
+    border: 1px solid rgba(0,200,255,0.3);
+    border-radius: 50%;
+    animation: radioRing 3s ease-in-out infinite;
+  }
+
+  .radio-rings::before { inset: 0; }
+  .radio-rings::after { inset: -10px; animation-delay: 0.5s; opacity: 0.5; }
+
+  @keyframes radioRing {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+  }
+
+  .radio-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--electric);
+    border-radius: 50%;
+    box-shadow: 0 0 16px var(--electric);
+    animation: pulse 2s ease infinite;
+  }
+
+  .radio-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .radio-info h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: white;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .radio-info p {
+    font-size: 14px;
+    color: rgba(200,224,240,0.5);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+
+  .radio-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,200,255,0.08);
+    border: 1px solid rgba(0,200,255,0.4);
+    color: var(--electric);
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .radio-btn:hover {
+    background: rgba(0,200,255,0.15);
+    box-shadow: 0 0 20px rgba(0,200,255,0.2);
+    transform: translateY(-1px);
+  }
+
+  .radio-btn-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--electric);
+    border-radius: 50%;
+  }
+
+  .audio-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  .bar {
+    width: 4px;
+    background: var(--electric);
+    border-radius: 2px;
+    opacity: 0.3;
+    transition: all 0.3s ease;
+  }
+
+  .radio-player.playing .bar { opacity: 1; }
+  .radio-player.playing .bar:nth-child(1) { animation: barAnim 0.8s ease infinite; }
+  .radio-player.playing .bar:nth-child(2) { animation: barAnim 0.8s ease 0.1s infinite; }
+  .radio-player.playing .bar:nth-child(3) { animation: barAnim 0.8s ease 0.2s infinite; }
+  .radio-player.playing .bar:nth-child(4) { animation: barAnim 0.8s ease 0.3s infinite; }
+  .radio-player.playing .bar:nth-child(5) { animation: barAnim 0.8s ease 0.15s infinite; }
+  .radio-player.playing .bar:nth-child(6) { animation: barAnim 0.8s ease 0.25s infinite; }
+  .radio-player.playing .bar:nth-child(7) { animation: barAnim 0.8s ease 0.05s infinite; }
+
+  @keyframes barAnim {
+    0%, 100% { height: 6px; }
+    50% { height: 28px; }
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-left {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(200,224,240,0.3);
+    letter-spacing: 2px;
+    line-height: 1.8;
+  }
+
+  .footer-left span {
+    display: block;
+  }
+
+  .footer-right {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: rgba(0,200,255,0.3);
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* INLINE AUDIO */
+  audio { display: none; }
+
+</style>
+</head>
+<body>
+
+<!-- HACKATHON BANNER -->
+<div class="hackathon-banner">
+  <span><span class="blink">◉</span> &nbsp; HEYGEN HACKATHON 2026 &nbsp;|&nbsp; MAY 14–15 &nbsp;|&nbsp; EL CODEX LABS SUBMISSION &nbsp;|&nbsp; BUILT LIVE &nbsp;<span class="blink">◉</span></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo-block">
+        <div class="company">EL Codex Labs</div>
+        <div class="tagline">// Infrastructure for Light</div>
+      </div>
+      <div class="status-block">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          SYSTEM LIVE
+        </div>
+        <div class="date-stamp">2026.05.14</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">// Autonomous Threat Intelligence System</div>
+    <h1 class="hero-title">
+      <span class="name">JOHNNY</span>
+      <span class="asoc">ASOC</span>
+    </h1>
+    <p class="hero-subtitle">
+      <strong>Real-time cybersecurity threat monitoring</strong> — powered by AI. 
+      Johnny watches the news, synthesizes active threats, and delivers 
+      <em>clear, calm, actionable briefings</em> before your team hears it anywhere else.
+    </p>
+
+    <!-- THREAT TICKER -->
+    <div class="threat-ticker">
+      <span class="ticker-label">⚠ ACTIVE THREAT</span>
+      <span class="ticker-text">FOXCONN RANSOMWARE CONFIRMED — Nitrogen Gang — 8TB Stolen — Apple / Intel / Google / Nvidia documents exposed — North American operations affected — May 14, 2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECKMARX JENKINS PLUGIN COMPROMISED — CVE-2026-33634 — CVSS 9.4 — Rotate all secrets immediately &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LLMJACKING ACTIVITY RISING — AI inference endpoints targeted — Bind to localhost — Gate with OAuth2</span>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="video-section">
+  <div class="container">
+    <div class="video-frame">
+      <div class="video-header">
+        <div class="video-header-left">
+          <div class="rec-dot"></div>
+          <span>LIVE BRIEFING — FOXCONN / NITROGEN RANSOMWARE — 2026.05.14</span>
+        </div>
+        <div class="threat-level">THREAT LEVEL: HIGH</div>
+      </div>
+      <div class="video-placeholder" id="videoPlaceholder">
+        <div class="video-corner tl"></div>
+        <div class="video-corner tr"></div>
+        <div class="video-corner bl"></div>
+        <div class="video-corner br"></div>
+        <div class="video-placeholder-inner">
+          <div class="play-ring" onclick="loadVideo()">
+            <div class="play-icon"></div>
+          </div>
+          <div class="video-loading-text">BRIEFING READY</div>
+          <div class="video-sub-text">Click to load Johnny ASOC — Foxconn Threat Briefing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEL BREAKDOWN -->
+<section class="intel-section">
+  <div class="container">
+    <div class="section-label">// Threat Intelligence — Active Incident</div>
+
+    <div class="intel-grid">
+      <div class="intel-card red">
+        <div class="intel-card-label">Data Exfiltrated</div>
+        <div class="intel-card-value">8 TB</div>
+        <div class="intel-card-sub">11M+ documents stolen</div>
+      </div>
+      <div class="intel-card gold">
+        <div class="intel-card-label">Threat Actor</div>
+        <div class="intel-card-value">Nitrogen</div>
+        <div class="intel-card-sub">Ransomware Gang</div>
+      </div>
+      <div class="intel-card">
+        <div class="intel-card-label">Target</div>
+        <div class="intel-card-value" style="font-size:16px; padding-top:4px;">Foxconn NA</div>
+        <div class="intel-card-sub">World's largest electronics mfg.</div>
+      </div>
+      <div class="intel-card green">
+        <div class="intel-card-label">Confirmed</div>
+        <div class="intel-card-value" style="font-size:16px; padding-top:4px;">Today</div>
+        <div class="intel-card-sub">May 14, 2026 — Active</div>
+      </div>
+    </div>
+
+    <div class="description-block">
+      <h3>// What Happened</h3>
+      <p>
+        The <strong>Nitrogen ransomware gang</strong> hit Foxconn's North American factories and is claiming responsibility for exfiltrating <em>eight terabytes</em> of data — over eleven million documents. Those documents contain <strong>confidential instructions, project files, and technical drawings</strong> from Apple, Intel, Google, Nvidia, and other major clients. Foxconn has confirmed the attack. The data is out.
+      </p>
+    </div>
+
+    <div class="actions-block">
+      <h3>// Defender Actions — Square Business</h3>
+      <ul class="action-list">
+        <li>
+          <span class="action-num">01</span>
+          Audit your supplier data sharing agreements — if your org has any Foxconn supply chain connection, map your exposure now.
+        </li>
+        <li>
+          <span class="action-num">02</span>
+          Verify no shared credentials touch Foxconn systems — credential overlap is your fastest attack vector.
+        </li>
+        <li>
+          <span class="action-num">03</span>
+          Watch your inbox — spear phishing using stolen context is coming. Brief your team today, not tomorrow.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT JOHNNY -->
+<section class="about-section">
+  <div class="container">
+    <div class="section-label">// About the System</div>
+    <div class="about-grid">
+      <div class="about-panel">
+        <h4>What Johnny ASOC Does</h4>
+        <p>
+          Johnny ASOC is an autonomous AI cybersecurity advisor built on the EL Codex Labs infrastructure. He monitors live threat intelligence feeds, synthesizes active incidents into human-readable briefings, and delivers them via AI avatar video — in plain language, with clear defender actions, before your team hears it anywhere else.
+          <br><br>
+          No dashboards. No jargon walls. Just Johnny — calm, direct, and Square Business when it counts.
+        </p>
+      </div>
+      <div class="about-panel dark">
+        <h4>Canonical Phrases</h4>
+        <p>Johnny operates in two modes. You'll know which one you're in.</p>
+        <div class="phrase-block">
+          <div class="phrase">
+            <span class="phrase-tag">SQUARE BUSINESS</span>
+            <span class="phrase-text">Threat-surface clarity. Zero padding. Pure perimeter truth.</span>
+          </div>
+          <div class="phrase">
+            <span class="phrase-tag">STAY GOLDEN</span>
+            <span class="phrase-text">The sign-off. Hold the standard. You're good.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RADIO -->
+<section class="radio-section">
+  <div class="container">
+    <div class="section-label">// FMRN — Francisco Motor Rapids Network</div>
+    <div class="radio-player" id="radioPlayer">
+      <div class="radio-icon-block">
+        <div class="radio-rings">
+          <div class="radio-dot"></div>
+        </div>
+      </div>
+      <div class="radio-info">
+        <h3>Live Radio Stream</h3>
+        <p>The soundtrack of EL Codex Labs. Broadcasting from GroundZero. Hit play — build something.</p>
+        <button class="radio-btn" onclick="toggleRadio()" id="radioBtn">
+          <span class="radio-btn-dot"></span>
+          <span id="radioBtnText">TUNE IN — FMRN</span>
+        </button>
+      </div>
+      <div class="audio-bars">
+        <div class="bar" style="height:8px"></div>
+        <div class="bar" style="height:16px"></div>
+        <div class="bar" style="height:10px"></div>
+        <div class="bar" style="height:24px"></div>
+        <div class="bar" style="height:12px"></div>
+        <div class="bar" style="height:20px"></div>
+        <div class="bar" style="height:8px"></div>
+      </div>
+    </div>
+    <audio id="radioAudio" src="https://groundzero.elcodexlabs.com:3691/stream" preload="none"></audio>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="container">
+  <footer>
+    <div class="footer-left">
+      <span>CHRISTOPHER // EL Architect // EL Codex Labs</span>
+      <span>Infrastructure for Light // HeyGen Hackathon 2026</span>
+      <span>Romans 8:28</span>
+    </div>
+    <div class="footer-right">
+      <div>Built Live</div>
+      <div>May 14–15, 2026</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Video loader — swap this URL for your HeyGen render URL when it's ready
+  function loadVideo() {
+    const placeholder = document.getElementById('videoPlaceholder');
+    const videoUrl = ''; // <- DROP YOUR HEYGEN VIDEO URL HERE
+
+    if (!videoUrl) {
+      placeholder.innerHTML = `
+        <div class="video-corner tl"></div>
+        <div class="video-corner tr"></div>
+        <div class="video-corner bl"></div>
+        <div class="video-corner br"></div>
+        <div class="video-placeholder-inner">
+          <div class="video-loading-text" style="animation: none; color: #FFB800;">RENDERING IN PROGRESS</div>
+          <div class="video-sub-text">Johnny is being generated — check back shortly</div>
+        </div>`;
+      return;
+    }
+
+    placeholder.innerHTML = `<video controls autoplay style="width:100%;height:100%;object-fit:cover;">
+      <source src="${videoUrl}" type="video/mp4">
+    </video>`;
+  }
+
+  // Radio toggle
+  let radioPlaying = false;
+  const audio = document.getElementById('radioAudio');
+  const player = document.getElementById('radioPlayer');
+  const btnText = document.getElementById('radioBtnText');
+
+  function toggleRadio() {
+    if (!radioPlaying) {
+      audio.play().then(() => {
+        radioPlaying = true;
+        player.classList.add('playing');
+        btnText.textContent = 'NOW PLAYING — FMRN';
+      }).catch(() => {
+        btnText.textContent = 'STREAM UNAVAILABLE';
+      });
+    } else {
+      audio.pause();
+      radioPlaying = false;
+      player.classList.remove('playing');
+      btnText.textContent = 'TUNE IN — FMRN';
+    }
+  }
+</script>
+
+</body>
+</html>
