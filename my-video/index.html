@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000810;
+      }
+
+      /* ── palette ── */
+      :root {
+        --cyan:     #00f0ff;
+        --green:    #00ff88;
+        --red:      #ff2244;
+        --bg:       #000810;
+        --panel:    rgba(0,240,255,0.04);
+        --border:   rgba(0,240,255,0.25);
+        --glow:     0 0 12px rgba(0,240,255,0.6), 0 0 30px rgba(0,240,255,0.2);
+        --glow-red: 0 0 12px rgba(255,34,68,0.7), 0 0 28px rgba(255,34,68,0.2);
+      }
+
+      /* ── background grid ── */
+      #bg-grid {
+        position: absolute; inset: 0;
+        background-color: var(--bg);
+        background-image:
+          linear-gradient(rgba(0,240,255,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,240,255,0.04) 1px, transparent 1px);
+        background-size: 60px 60px;
+      }
+
+      /* ── scanlines ── */
+      #scanlines {
+        position: absolute; inset: 0; z-index: 80; pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0px, transparent 3px,
+          rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px
+        );
+      }
+
+      /* ── vignette ── */
+      #vignette {
+        position: absolute; inset: 0; z-index: 79; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.72) 100%);
+      }
+
+      /* ── intro splash ── */
+      #intro-splash {
+        position: absolute; inset: 0; z-index: 70;
+        background: #000810;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 28px;
+      }
+      .intro-line {
+        width: 640px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        box-shadow: 0 0 14px rgba(0,240,255,0.5);
+      }
+      #intro-title {
+        font-family: 'Orbitron', sans-serif; font-weight: 900;
+        font-size: 100px; color: var(--cyan);
+        text-shadow: var(--glow); letter-spacing: 18px;
+        text-align: center;
+      }
+      #intro-sub {
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 22px; color: #00c8d4;
+        letter-spacing: 8px; text-align: center;
+        text-transform: uppercase;
+      }
+
+      /* ── top bar ── */
+      #topbar {
+        position: absolute; top: 0; left: 0; right: 0; height: 72px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(0,8,16,0.94);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 48px;
+        font-family: 'Share Tech Mono', monospace;
+        z-index: 5;
+      }
+      #logo-text {
+        font-family: 'Orbitron', sans-serif; font-weight: 900;
+        font-size: 24px; color: var(--cyan);
+        text-shadow: var(--glow); letter-spacing: 5px;
+      }
+      #top-date { font-size: 15px; color: #00c0cc; letter-spacing: 3px; }
+      #top-status {
+        font-size: 13px; color: var(--red);
+        text-shadow: var(--glow-red); letter-spacing: 2px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      #status-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--red);
+        box-shadow: 0 0 8px var(--red), 0 0 20px rgba(255,34,68,0.5);
+      }
+
+      /* ── threat ticker ── */
+      #ticker-bar {
+        position: absolute; top: 72px; left: 0; right: 0; height: 44px;
+        background: rgba(255,34,68,0.07);
+        border-bottom: 1px solid rgba(255,34,68,0.28);
+        display: flex; align-items: center; overflow: hidden;
+        font-family: 'Share Tech Mono', monospace; font-size: 14px;
+        color: #ff7788; letter-spacing: 1.5px;
+        z-index: 5;
+      }
+      #ticker-label {
+        padding: 0 22px;
+        font-weight: bold; font-size: 12px; letter-spacing: 3px;
+        color: var(--red); white-space: nowrap;
+        border-right: 1px solid rgba(255,34,68,0.35);
+        height: 100%; display: flex; align-items: center;
+        background: rgba(255,34,68,0.12);
+      }
+      #ticker-track { overflow: hidden; flex: 1; }
+      #ticker-content { padding-left: 32px; white-space: nowrap; display: inline-block; }
+
+      /* ── left panel ── */
+      #left-panel {
+        position: absolute; top: 136px; left: 0; width: 540px; bottom: 0;
+        border-right: 1px solid var(--border);
+        background: rgba(0,8,16,0.72);
+        padding: 36px 32px;
+        display: flex; flex-direction: column; gap: 20px;
+        font-family: 'Share Tech Mono', monospace;
+        z-index: 5;
+      }
+
+      /* ── right panel ── */
+      #right-panel {
+        position: absolute; top: 136px; right: 0; width: 540px; bottom: 0;
+        border-left: 1px solid var(--border);
+        background: rgba(0,8,16,0.72);
+        padding: 36px 32px;
+        display: flex; flex-direction: column; gap: 20px;
+        font-family: 'Share Tech Mono', monospace;
+        z-index: 5;
+      }
+
+      /* ── video center ── */
+      #video-center {
+        position: absolute; top: 136px; left: 540px; right: 540px; bottom: 0;
+        display: flex; align-items: center; justify-content: center;
+        z-index: 5;
+      }
+      #video-wrapper {
+        display: flex; flex-direction: column; align-items: center; gap: 14px;
+      }
+      #video-frame {
+        position: relative; width: 840px; height: 472px;
+        background: #000;
+        border: 1px solid var(--border);
+        box-shadow: var(--glow), inset 0 0 40px rgba(0,240,255,0.03);
+      }
+      #main-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .vcorner {
+        position: absolute; width: 24px; height: 24px;
+        border-color: var(--cyan); border-style: solid; opacity: 0.75;
+      }
+      .vcorner.tl { top: -1px; left: -1px;  border-width: 2px 0 0 2px; }
+      .vcorner.tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+      .vcorner.bl { bottom: -1px; left: -1px;  border-width: 0 0 2px 2px; }
+      .vcorner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+      #video-label {
+        text-align: center;
+        font-family: 'Share Tech Mono', monospace; font-size: 12px;
+        color: #00b8c8; letter-spacing: 3px;
+      }
+
+      /* ── shared panel pieces ── */
+      .panel-header {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 10px; letter-spacing: 4px;
+        color: var(--cyan); text-transform: uppercase;
+        border-bottom: 1px solid var(--border); padding-bottom: 10px;
+        opacity: 0.7;
+      }
+      .intel-card {
+        background: var(--panel); border: 1px solid var(--border);
+        border-left: 3px solid var(--cyan); padding: 14px 16px;
+      }
+      .intel-card.alert { border-left-color: var(--red); background: rgba(255,34,68,0.04); }
+      .intel-card.ok    { border-left-color: var(--green); background: rgba(0,255,136,0.04); }
+      .card-label {
+        font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+        margin-bottom: 7px; color: #00c8d4;
+      }
+      .intel-card.alert .card-label { color: #ff7788; }
+      .intel-card.ok    .card-label { color: #00e87a; }
+      .card-title { font-size: 13px; line-height: 1.5; color: #e0f8ff; margin-bottom: 5px; }
+      .card-meta  { font-size: 11px; color: #8ec8d8; letter-spacing: 1px; }
+
+      /* threat score */
+      #threat-score-block {
+        background: rgba(255,34,68,0.06);
+        border: 1px solid rgba(255,34,68,0.25);
+        padding: 18px 16px;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      #threat-number {
+        font-family: 'Orbitron', sans-serif; font-weight: 900;
+        font-size: 54px; color: var(--red);
+        text-shadow: var(--glow-red); line-height: 1;
+      }
+      #threat-label-stack { text-align: right; }
+      #threat-label-stack .t1 {
+        font-size: 10px; letter-spacing: 3px;
+        color: #ff7788; text-transform: uppercase; margin-bottom: 4px;
+      }
+      #threat-label-stack .t2 { font-size: 13px; color: var(--red); letter-spacing: 1px; }
+
+      /* mode badge */
+      #mode-badge {
+        background: rgba(0,240,255,0.07);
+        border: 1px solid rgba(0,240,255,0.28);
+        padding: 16px 16px;
+        display: flex; align-items: center; gap: 14px;
+        margin-top: auto;
+      }
+      #mode-icon { font-size: 24px; color: var(--cyan); text-shadow: var(--glow); }
+      #mode-text .m1 {
+        font-size: 10px; letter-spacing: 4px;
+        color: #00c8d4; text-transform: uppercase; margin-bottom: 5px;
+      }
+      #mode-text .m2 {
+        font-size: 13px; color: var(--cyan);
+        text-shadow: 0 0 8px rgba(0,240,255,0.4); letter-spacing: 1px;
+      }
+
+      /* ── outro overlay ── */
+      #outro {
+        position: absolute; inset: 0; z-index: 60;
+        background: rgba(0,8,16,0);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 18px;
+      }
+      #outro-title {
+        font-family: 'Orbitron', sans-serif; font-weight: 900;
+        font-size: 56px; color: var(--cyan);
+        text-shadow: var(--glow); letter-spacing: 14px;
+        opacity: 0;
+      }
+      #outro-sub {
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 18px; color: #00ccd8;
+        letter-spacing: 5px; text-transform: uppercase;
+        opacity: 0;
+      }
+      #outro-url {
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 15px; color: #00b0bc;
+        letter-spacing: 3px; opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="18"
+      data-width="1920"
+      data-height="1080"
+    >
+
+      <!-- permanent layers -->
+      <div id="bg-grid"></div>
+      <div id="scanlines"></div>
+      <div id="vignette"></div>
+
+      <!-- ══ INTRO SPLASH [0 – 3s] ══ -->
+      <div id="intro-splash" class="clip" data-start="0" data-duration="3" data-track-index="10">
+        <div class="intro-line" id="intro-line-top"></div>
+        <div id="intro-title">JOHNNY ASOC</div>
+        <div id="intro-sub">Autonomous Security Operations Center</div>
+        <div class="intro-line" id="intro-line-bot"></div>
+      </div>
+
+      <!-- ══ TOP BAR [2.5 – 18s] ══ -->
+      <div id="topbar" class="clip" data-start="2.5" data-duration="15.5" data-track-index="2">
+        <div id="logo-text">EL CODEX LABS</div>
+        <div id="top-date">2026.05.14 // HeyGen Hackathon</div>
+        <div id="top-status">
+          <div id="status-dot"></div>
+          LIVE THREAT FEED ACTIVE
+        </div>
+      </div>
+
+      <!-- ══ TICKER [3 – 18s] ══ -->
+      <div id="ticker-bar" class="clip" data-start="3" data-duration="15" data-track-index="3">
+        <div id="ticker-label">⚠ THREAT FEED</div>
+        <div id="ticker-track">
+          <span id="ticker-content" data-layout-allow-overflow>
+            FOXCONN BREACH — NITROGEN RANSOMWARE — 8TB EXFILTRATED — APPLE / INTEL / GOOGLE / NVIDIA DOCUMENTS COMPROMISED &nbsp;&nbsp;|&nbsp;&nbsp;
+            CVE-2026-33634 — CHECKMARX JENKINS PLUGIN RCE — CVSS 9.4 — PATCH IMMEDIATELY &nbsp;&nbsp;|&nbsp;&nbsp;
+            LLMJACKING CAMPAIGN — AI INFERENCE ENDPOINTS UNDER ACTIVE EXPLOITATION &nbsp;&nbsp;|&nbsp;&nbsp;
+            FOXCONN BREACH — NITROGEN RANSOMWARE — 8TB EXFILTRATED
+          </span>
+        </div>
+      </div>
+
+      <!-- ══ LEFT PANEL [3 – 18s] ══ -->
+      <div id="left-panel" class="clip" data-start="3" data-duration="15" data-track-index="4">
+        <div class="panel-header">Active Threat Alerts</div>
+
+        <div class="intel-card alert" id="card-foxconn">
+          <div class="card-label">Critical // Ransomware</div>
+          <div class="card-title">Foxconn — Nitrogen Gang Breach</div>
+          <div class="card-meta">8 TB exfil · Apple · Intel · Google · Nvidia</div>
+        </div>
+
+        <div class="intel-card alert" id="card-cve">
+          <div class="card-label">Critical // CVE-2026-33634</div>
+          <div class="card-title">Checkmarx Jenkins Plugin RCE</div>
+          <div class="card-meta">CVSS 9.4 — patch immediately</div>
+        </div>
+
+        <div class="intel-card" id="card-llm">
+          <div class="card-label">High // AI Infrastructure</div>
+          <div class="card-title">LLMjacking — Inference Endpoints</div>
+          <div class="card-meta">Active campaign · AI cloud targets</div>
+        </div>
+
+        <div id="threat-score-block">
+          <div id="threat-number">9.4</div>
+          <div id="threat-label-stack">
+            <div class="t1">Threat Index</div>
+            <div class="t2">CRITICAL</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ VIDEO CENTER [3 – 18s] ══ -->
+      <div id="video-center" class="clip" data-start="3" data-duration="15" data-track-index="5">
+        <div id="video-wrapper">
+          <div id="video-frame">
+            <div class="vcorner tl"></div>
+            <div class="vcorner tr"></div>
+            <div class="vcorner bl"></div>
+            <div class="vcorner br"></div>
+            <video id="main-video" muted playsinline>
+              <source src="video-h264.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <div id="video-label">// Live Briefing — Foxconn Ransomware Incident //</div>
+        </div>
+      </div>
+
+      <!-- audio track (separate per HyperFrames convention) -->
+      <audio id="main-audio" class="clip"
+        src="video-h264.mp4"
+        data-start="3" data-duration="15" data-track-index="7"></audio>
+
+      <!-- ══ RIGHT PANEL [3 – 18s] ══ -->
+      <div id="right-panel" class="clip" data-start="3" data-duration="15" data-track-index="6">
+        <div class="panel-header">Defender Actions</div>
+
+        <div class="intel-card ok" id="action-1">
+          <div class="card-label">Recommended // Immediate</div>
+          <div class="card-title">Isolate affected endpoints &amp; rotate all exposed credentials</div>
+          <div class="card-meta">Priority 1 · Perimeter response</div>
+        </div>
+
+        <div class="intel-card ok" id="action-2">
+          <div class="card-label">Recommended // Patch</div>
+          <div class="card-title">Apply Jenkins Checkmarx plugin hotfix or disable plugin</div>
+          <div class="card-meta">CVE-2026-33634 · CVSS 9.4</div>
+        </div>
+
+        <div class="intel-card ok" id="action-3">
+          <div class="card-label">Recommended // Monitor</div>
+          <div class="card-title">Audit AI inference API keys &amp; enable anomaly rate-limit alerts</div>
+          <div class="card-meta">LLMjacking mitigation</div>
+        </div>
+
+        <div id="mode-badge">
+          <div id="mode-icon">◈</div>
+          <div id="mode-text">
+            <div class="m1">Operational Mode</div>
+            <div class="m2">SQUARE BUSINESS // STAY GOLDEN</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ OUTRO [15 – 18s] ══ -->
+      <div id="outro" class="clip" data-start="15" data-duration="3" data-track-index="9">
+        <div id="outro-title">JOHNNY ASOC</div>
+        <div id="outro-sub">EL Codex Labs — HeyGen Hackathon 2026</div>
+        <div id="outro-url">hackathon.elcodexlabs.com</div>
+      </div>
+
+    </div><!-- /#root -->
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ── INTRO ──
+      tl.from("#intro-title",   { opacity: 0, scaleX: 1.05, duration: 0.6, ease: "power2.out" }, 0.2);
+      tl.from("#intro-sub",     { opacity: 0, y: 14, duration: 0.5, ease: "power2.out" }, 0.65);
+      tl.from(["#intro-line-top","#intro-line-bot"], { scaleX: 0, duration: 0.7, ease: "power2.inOut", transformOrigin: "center", stagger: 0.05 }, 0.3);
+      tl.to("#intro-splash",    { opacity: 0, duration: 0.5, ease: "power2.in" }, 2.5);
+      tl.set("#intro-splash",   { opacity: 0 }, 3.0);
+
+      // ── TOP BAR ──
+      tl.from("#topbar", { y: -72, opacity: 0, duration: 0.45, ease: "power3.out" }, 2.5);
+
+      // ── TICKER ──
+      tl.from("#ticker-bar", { opacity: 0, x: -60, duration: 0.35, ease: "power2.out" }, 3.0);
+      tl.to("#ticker-content", { x: -2800, duration: 14, ease: "none" }, 3.0);
+
+      // ── LEFT PANEL ──
+      tl.from("#left-panel", { x: -40, opacity: 0, duration: 0.45, ease: "power2.out" }, 3.0);
+      tl.from(["#card-foxconn","#card-cve","#card-llm","#threat-score-block"], {
+        x: -24, opacity: 0, duration: 0.35, ease: "power2.out", stagger: 0.13
+      }, 3.3);
+
+      // ── VIDEO CENTER ──
+      tl.from("#video-center", { opacity: 0, scale: 0.97, duration: 0.55, ease: "power2.out" }, 3.0);
+      tl.from("#video-label",  { opacity: 0, y: 8, duration: 0.4 }, 3.7);
+
+      // ── RIGHT PANEL ──
+      tl.from("#right-panel", { x: 40, opacity: 0, duration: 0.45, ease: "power2.out" }, 3.0);
+      tl.from(["#action-1","#action-2","#action-3","#mode-badge"], {
+        x: 24, opacity: 0, duration: 0.35, ease: "power2.out", stagger: 0.13
+      }, 3.3);
+
+      // ── pulsing threat score (18s total, starts 4.5s, cycleDuration=1.8s → repeat=6) ──
+      tl.to("#threat-number", {
+        textShadow: "0 0 32px rgba(255,34,68,1), 0 0 64px rgba(255,34,68,0.45)",
+        duration: 0.9, repeat: 6, yoyo: true, ease: "sine.inOut"
+      }, 4.5);
+
+      // ── pulsing status dot (18s total, starts 3.5s, cycleDuration=1.3s → repeat=10) ──
+      tl.to("#status-dot", {
+        opacity: 0.15, duration: 0.65, repeat: 10, yoyo: true, ease: "sine.inOut"
+      }, 3.5);
+
+      // ── OUTRO ──
+      tl.to("#outro",       { background: "rgba(0,8,16,0.9)", duration: 0.7, ease: "power2.out" }, 15.0);
+      tl.to("#outro-title", { opacity: 1, duration: 0.55, ease: "power2.out" }, 15.3);
+      tl.from("#outro-title", { y: 22, duration: 0.55, ease: "power2.out" }, 15.3);
+      tl.to("#outro-sub",   { opacity: 1, duration: 0.45, ease: "power2.out" }, 15.8);
+      tl.to("#outro-url",   { opacity: 1, duration: 0.45, ease: "power2.out" }, 16.2);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
